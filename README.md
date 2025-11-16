@@ -9,6 +9,8 @@
 
 This repository contains our solution for **SemEval 2025 Task 11: Subtask 1 - Binary Polarization Detection**. We implement a novel approach combining **BitNet 1.58-bit quantization** with state-of-the-art transformer architectures for efficient multilingual text polarization classification.
 
+📄 **Research Abstract**: A detailed overview of our methodology, architecture, and results is available in [`GenAI_Semeval_Abstract.pdf`](GenAI_Semeval_Abstract.pdf).
+
 ### Key Achievements
 
 - 🏆 **F1 Macro: 0.977** on English validation set
@@ -31,6 +33,9 @@ semeval-polarization/
 ├── Semeval_multilingual_IMPROVED.ipynb    # Advanced features + data augmentation
 ├── SemEval_RWK.ipynb                      # RWKV efficient architecture
 ├── semeval_mamba.ipynb                    # Mamba state-space model (experimental)
+│
+├── GenAI_Semeval_Abstract.pdf             # Research abstract and methodology overview
+├── project_timeline.csv                   # Development phases and timeline
 │
 ├── data/                                  # Dataset directory (not included)
 │   ├── subtask1/
