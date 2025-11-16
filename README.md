@@ -49,7 +49,7 @@ semeval-polarization/
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/semeval-polarization.git
+git clone https://github.com/AnkitDash-code/Semantic-Vectors-SemEval
 cd semeval-polarization
 
 # Install dependencies
