@@ -24,6 +24,7 @@ This repository contains our solution for **SemEval 2025 Task 11: Subtask 1 - Bi
 ```
 semeval-polarization/
 │
+├── Semantic_mutilingual_deberta.ipynb     # Latest: Production-ready XLM-RoBERTa pipeline
 ├── Semeval.ipynb                          # Foundation: BERT + BitNet (English only)
 ├── Semeval_multilingual.ipynb             # Multilingual extension (9 languages)
 ├── Semeval_Optimized.ipynb                # Hyperparameter optimization
@@ -82,9 +83,9 @@ print(f"Confidence: {confidence:.3f}")
 
 ## 🏗️ Architecture Evolution
 
-### Development Timeline: 17 Days of Innovation (Oct 24 - Nov 9, 2025)
+### Development Timeline: 24 Days of Innovation (Oct 24 - Nov 16, 2025)
 
-The project evolved through **5 distinct phases**, each building upon the previous to create a comprehensive multilingual polarization detection system:
+The project evolved through **6 distinct phases**, each building upon the previous to create a comprehensive multilingual polarization detection system:
 
 #### **Phase 1: Foundation** (Oct 24, 2025 - Day 1)
 
@@ -121,7 +122,7 @@ The project evolved through **5 distinct phases**, each building upon the previo
 
 ---
 
-#### **Phase 3: Advanced Improvements** (Nov 2, 2025 - Day 10)
+#### **Phase 3: Advanced Techniques** (Q3-Q4 2026)
 
 🚀 **Goal**: Enhance model with data augmentation and adaptive features
 
@@ -174,16 +175,62 @@ The project evolved through **5 distinct phases**, each building upon the previo
 
 ---
 
+#### **Phase 6: Production-Ready Pipeline** (Nov 16, 2025 - Day 24)
+
+🏭 **Goal**: Create robust, deployable training infrastructure
+
+| Notebook                             | Innovation                   | Architecture                         | Performance          |
+| ------------------------------------ | ---------------------------- | ------------------------------------ | -------------------- |
+| `Semantic_mutilingual_deberta.ipynb` | Production training pipeline | XLM-RoBERTa-base + Advanced Training | **Production-Ready** |
+
+**Key Achievements**:
+
+- Implemented **XLM-RoBERTa-base** as multilingual backbone (better than mDeBERTa for deployment)
+- **Stratified split** (85/15) maintaining class and language balance
+- **Balanced class weights** computed per-dataset for optimal F1
+- **Mixed precision training (AMP)** for 2x memory efficiency
+- **Gradient accumulation (2x)** enabling larger effective batch sizes
+- **Early stopping** with patience=3 to prevent overfitting
+- **Linear warmup (6%)** + decay scheduling for stable convergence
+- **Per-language F1 evaluation** for fine-grained performance tracking
+- **Best model checkpointing** with automatic save/restore
+- Extended context to **256 tokens** for longer documents
+- AdamW optimizer with **β2=0.98** for better multilingual stability
+
+**Training Configuration**:
+
+```python
+learning_rate = 3e-5
+per_device_train_batch_size = 16
+per_device_eval_batch_size = 64
+gradient_accumulation_steps = 2
+num_epochs = 6
+warmup_ratio = 0.06
+max_grad_norm = 1.0
+weight_decay = 0.02
+```
+
+**Production Features**:
+
+- Robust error handling and data validation
+- Efficient DataLoader with pin_memory optimization
+- Comprehensive evaluation metrics (overall + per-language)
+- Model versioning and checkpoint management
+- Ready for deployment pipeline integration
+
+---
+
 ### Quick Reference Timeline
 
-| Date             | Notebook                              | Key Innovation                | Performance       |
-| ---------------- | ------------------------------------- | ----------------------------- | ----------------- |
-| **Oct 24, 2025** | `Semeval.ipynb`                       | Initial BitNet implementation | F1: 0.977 (EN)    |
-| **Oct 27, 2025** | `Semeval_multilingual.ipynb`          | 9-language support            | F1: 0.764 (Multi) |
-| **Oct 27, 2025** | `Semeval_Optimized.ipynb`             | Hyperparameter tuning         | Threshold: 0.49   |
-| **Nov 2, 2025**  | `Semeval_multilingual_IMPROVED.ipynb` | Data aug + adapters           | Enhanced          |
-| **Nov 7, 2025**  | `SemEval_RWK.ipynb`                   | RWKV O(N) architecture        | 2x faster         |
-| **Nov 9, 2025**  | `semeval_mamba.ipynb`                 | Mamba SSM exploration         | Experimental      |
+| Date             | Notebook                              | Key Innovation                | Performance          |
+| ---------------- | ------------------------------------- | ----------------------------- | -------------------- |
+| **Oct 24, 2025** | `Semeval.ipynb`                       | Initial BitNet implementation | F1: 0.977 (EN)       |
+| **Oct 27, 2025** | `Semeval_multilingual.ipynb`          | 9-language support            | F1: 0.764 (Multi)    |
+| **Oct 27, 2025** | `Semeval_Optimized.ipynb`             | Hyperparameter tuning         | Threshold: 0.49      |
+| **Nov 2, 2025**  | `Semeval_multilingual_IMPROVED.ipynb` | Data aug + adapters           | Enhanced             |
+| **Nov 7, 2025**  | `SemEval_RWK.ipynb`                   | RWKV O(N) architecture        | 2x faster            |
+| **Nov 9, 2025**  | `semeval_mamba.ipynb`                 | Mamba SSM exploration         | Experimental         |
+| **Nov 16, 2025** | `Semantic_mutilingual_deberta.ipynb`  | Production pipeline           | **Production-Ready** |
 
 ### Core Components
 
@@ -436,7 +483,7 @@ print(f"Expected F1 Macro: {best_f1:.4f}")
 
 ## 📚 Dataset
 
-### SemEval 2025 Task 11 - Subtask 1
+### SemEval 2025 Task 9 - Subtask 1
 
 **Task**: Binary classification of text polarization
 
@@ -533,8 +580,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-
-
 ## 🗺️ Roadmap & Future Directions
 
 ### ✅ Completed Milestones
@@ -545,10 +590,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] **Phase 4**: Data augmentation pipeline with language-specific weights (Nov 2)
 - [x] **Phase 5**: RWKV efficient architecture with O(N) complexity (Nov 7)
 - [x] **Phase 6**: Mamba state-space model exploration (Nov 9)
+- [x] **Phase 7**: Production-ready XLM-RoBERTa pipeline with advanced training (Nov 16)
 
 ### 🚀 Future Research Directions
 
-#### **Phase 6: Hierarchical Reasoning Models** 
+#### **Phase 6: Hierarchical Reasoning Models**
 
 **Goal**: Implement multi-level reasoning for nuanced polarization detection
 
@@ -600,11 +646,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 | Focus Area             | Target Metric          | Timeline |
 | ---------------------- | ---------------------- | -------- |
-| Hierarchical Reasoning | F1 Macro > 0.85        |   2026   |
-| LLM Integration        | Zero-shot F1 > 0.80    |   2026   |
-| Explainability         | Human agreement > 90%  |   2026   |
-| Cross-lingual Transfer | New language F1 > 0.75 |   2026   |
-| Production API         | Latency < 100ms        |   2026   |
+| Hierarchical Reasoning | F1 Macro > 0.85        | 2026     |
+| LLM Integration        | Zero-shot F1 > 0.80    | 2026     |
+| Explainability         | Human agreement > 90%  | 2026     |
+| Cross-lingual Transfer | New language F1 > 0.75 | 2026     |
+| Production API         | Latency < 100ms        | 2026     |
 
 ### 📊 Success Metrics
 
