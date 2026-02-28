@@ -1,0 +1,6 @@
+# Ignore all CSV files
+*.csv
+*.zip
+
+# Ignore Papers folder
+Papers/

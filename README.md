@@ -24,27 +24,40 @@ This repository contains our solution for **SemEval 2025 Task 11: Subtask 1 - Bi
 ## 📁 Project Structure
 
 ```
-semeval-polarization/
+Work/
 │
-├── Semantic_mutilingual_deberta.ipynb     # Latest: Production-ready XLM-RoBERTa pipeline
-├── Semeval.ipynb                          # Foundation: BERT + BitNet (English only)
-├── Semeval_multilingual.ipynb             # Multilingual extension (9 languages)
-├── Semeval_Optimized.ipynb                # Hyperparameter optimization
-├── Semeval_multilingual_IMPROVED.ipynb    # Advanced features + data augmentation
-├── SemEval_RWK.ipynb                      # RWKV efficient architecture
-├── semeval_mamba.ipynb                    # Mamba state-space model (experimental)
+├── Notebooks/ (Initial Exploration & Prototypes)
+│   ├── Semeval.ipynb                          # Foundation: BERT + BitNet (English only)
+│   ├── Semeval_multilingual.ipynb             # Multilingual extension
+│   ├── Semeval_Optimized.ipynb                # Hyperparameter optimization
+│   ├── Semeval_multilingual_IMPROVED.ipynb    # Advanced features + data augmentation
+│   ├── SemEval_RWK.ipynb                      # RWKV efficient architecture
+│   ├── semeval_mamba.ipynb                    # Mamba state-space model (experimental)
+│   ├── Semantic_mutilingual_deberta.ipynb     # Early Production XLM-RoBERTa pipeline
+│   └── Roberta_model2.ipynb                   # RoBERTa experiments
 │
-├── GenAI_Semeval_Abstract.pdf             # Research abstract and methodology overview
-├── project_timeline.csv                   # Development phases and timeline
+├── Scripts/ (Model Scaling & Advanced Tuning)
+│   ├── new_model.py & new_model_fixed.py      # Baseline script migration
+│   ├── roberta_large.py                       # RoBERTa Large baseline
+│   ├── MT5.py & T5Gemma.py                    # Sequence-to-Sequence / Generative approaches
+│   ├── MDeberta-XLM.py & Mdeberta-XLM-final.py# XLM-RoBERTa & mDeBERTa integration
+│   └── Mdeberta-QLora.py                      # QLoRA efficient fine-tuning
 │
-├── data/                                  # Dataset directory (not included)
-│   ├── subtask1/
-│   │   ├── train/                        # Training data (9 language CSVs)
-│   │   └── dev/                          # Development data
+├── Final Submissions/ (Current & Future)
+│   ├── lightning.py                           # 2nd Last Version: PyTorch Lightning framework migration
+│   ├── final_submission_XLM-Mdeberta-Expert.py# Last & Final Version: Ensembled XLM/mDeBERTa
+│   └── [WIP] paper_submission_version.py      # Final Paper Version: Reproducible pipeline (Code WIP)
 │
-├── results/                               # Training outputs
-├── logs/                                  # TensorBoard logs
-└── README.md                              # This file
+├── Papers/                                    # Relevant research papers
+├── GenAI_Semeval_Abstract.pdf                 # Research abstract and methodology overview
+├── project_timeline.csv                       # Development phases and timeline
+│
+├── subtask1/                                  # Dataset directory
+│   ├── train/                                 # Training data (9 language CSVs)
+│   └── dev/                                   # Development data
+│
+├── predictions_qwen3/                         # Inference outputs from external models
+└── README.md                                  # This file
 ```
 
 ---
@@ -88,11 +101,11 @@ print(f"Confidence: {confidence:.3f}")
 
 ## 🏗️ Architecture Evolution
 
-### Development Timeline: 24 Days of Innovation (Oct 24 - Nov 16, 2025)
+### Development Timeline: Iterative Innovation
 
-The project evolved through **6 distinct phases**, each building upon the previous to create a comprehensive multilingual polarization detection system:
+The project evolved through **10 distinct phases**, each building upon the previous to create a comprehensive multilingual polarization detection system:
 
-#### **Phase 1: Foundation** (Oct 24, 2025 - Day 1)
+#### **Phase 1: Foundation (Initial Version)**
 
 🎯 **Goal**: Establish baseline with efficient quantization
 
@@ -109,7 +122,7 @@ The project evolved through **6 distinct phases**, each building upon the previo
 
 ---
 
-#### **Phase 2: Multilingual Expansion** (Oct 27, 2025 - Day 4)
+#### **Phase 2: Multilingual Expansion (Early Versions)**
 
 🌍 **Goal**: Scale to 9 languages with optimized hyperparameters
 
@@ -127,7 +140,7 @@ The project evolved through **6 distinct phases**, each building upon the previo
 
 ---
 
-#### **Phase 3: Advanced Techniques** (Q3-Q4 2026)
+#### **Phase 3: Advanced Techniques (Intermediate Versions)**
 
 🚀 **Goal**: Enhance model with data augmentation and adaptive features
 
@@ -145,7 +158,7 @@ The project evolved through **6 distinct phases**, each building upon the previo
 
 ---
 
-#### **Phase 4: Efficiency Breakthrough** (Nov 7, 2025 - Day 15)
+#### **Phase 4: Efficiency Breakthrough (Experimental)**
 
 ⚡ **Goal**: Achieve linear complexity with competitive accuracy
 
@@ -163,7 +176,7 @@ The project evolved through **6 distinct phases**, each building upon the previo
 
 ---
 
-#### **Phase 5: Experimental Exploration** (Nov 9, 2025 - Day 17)
+#### **Phase 5: Experimental Exploration (Alternative Models)**
 
 🔬 **Goal**: Explore next-generation architectures
 
@@ -180,7 +193,7 @@ The project evolved through **6 distinct phases**, each building upon the previo
 
 ---
 
-#### **Phase 6: Production-Ready Pipeline** (Nov 16, 2025 - Day 24)
+#### **Phase 6: Production-Ready Pipeline (First Stable Version)**
 
 🏭 **Goal**: Create robust, deployable training infrastructure
 
@@ -225,17 +238,86 @@ weight_decay = 0.02
 
 ---
 
-### Quick Reference Timeline
+#### **Phase 7: Script Migration & Advanced Architectures (Scaling)**
 
-| Date             | Notebook                              | Key Innovation                | Performance          |
+🚀 **Goal**: Transition from notebooks to robust scripts and explore large/generative models
+
+| Script                              | Innovation                      | Architecture     | Status       |
+| ----------------------------------- | ------------------------------- | ---------------- | ------------ |
+| `roberta_large.py` / `new_model.py` | Scaling up parameters           | RoBERTa Large    | Evaluated    |
+| `MT5.py` / `T5Gemma.py`             | Seq2seq & Generative approaches | mT5 / Gemma      | Evaluated    |
+| `MDeberta-XLM.py`                   | Multilingual model integration  | mDeBERTa + XLM-R | Pre-final    |
+| `Mdeberta-QLora.py`                 | Parameter-efficient fine-tuning | mDeBERTa + QLoRA | Optimization |
+
+**Key Achievements**:
+
+- Migrated experimental notebooks to scalable Python scripts.
+- Evaluated decoder/encoder-decoder architectures (Gemma, mT5) for classification.
+- Leveraged QLoRA for memory-efficient training of large checkpoint models.
+
+---
+
+#### **Phase 8: PyTorch Lightning Migration (2nd Last Version)**
+
+⚡ **Goal**: Industrial-grade training framework scalability
+
+| Script         | Innovation                    | Architecture     | Status               |
+| -------------- | ----------------------------- | ---------------- | -------------------- |
+| `lightning.py` | PyTorch Lightning integration | Modular Pipeline | **2nd Last Version** |
+
+**Key Achievements**:
+
+- Re-architected training loop into PyTorch Lightning modules for multi-GPU efficiency.
+- Streamlined distributed data parallel (DDP) training.
+- Handled advanced gradient accumulation, logging, and callbacks automatically.
+
+---
+
+#### **Phase 9: Final Expert Submission (Final Version)**
+
+🏆 **Goal**: Maximizing competition metrics via specialized routing/ensembling
+
+| Script                                    | Innovation               | Architecture           | Status            |
+| ----------------------------------------- | ------------------------ | ---------------------- | ----------------- |
+| `final_submission_XLM-Mdeberta-Expert.py` | Hybrid Expert Ensembling | XLM-RoBERTa + mDeBERTa | **Final Version** |
+
+**Key Achievements**:
+
+- Created the definitive submission script utilizing a Mixture of Experts or strict ensembling between XLM-R and mDeBERTa models.
+- Yielded the highest overall multilingual F1 Macro score.
+
+---
+
+#### **Phase 10: Official Paper Release (WIP)**
+
+📝 **Goal**: Prepare clean, modular code for academic publishing
+
+| Script                        | Innovation                    | Target                | Status               |
+| ----------------------------- | ----------------------------- | --------------------- | -------------------- |
+| `paper_submission_version.py` | Cleaned reproducible pipeline | Refined Architectures | **Work In Progress** |
+
+**Key Achievements**:
+
+- Finalizing configuration for exact paper reproducibility.
+- Code is currently actively being worked on and will be pushed later.
+
+---
+
+### Version Progression Summary
+
+| Version Stage    | File / Script                         | Key Innovation                | Performance          |
 | ---------------- | ------------------------------------- | ----------------------------- | -------------------- |
-| **Oct 24, 2025** | `Semeval.ipynb`                       | Initial BitNet implementation | F1: 0.977 (EN)       |
-| **Oct 27, 2025** | `Semeval_multilingual.ipynb`          | 9-language support            | F1: 0.764 (Multi)    |
-| **Oct 27, 2025** | `Semeval_Optimized.ipynb`             | Hyperparameter tuning         | Threshold: 0.49      |
-| **Nov 2, 2025**  | `Semeval_multilingual_IMPROVED.ipynb` | Data aug + adapters           | Enhanced             |
-| **Nov 7, 2025**  | `SemEval_RWK.ipynb`                   | RWKV O(N) architecture        | 2x faster            |
-| **Nov 9, 2025**  | `semeval_mamba.ipynb`                 | Mamba SSM exploration         | Experimental         |
-| **Nov 16, 2025** | `Semantic_mutilingual_deberta.ipynb`  | Production pipeline           | **Production-Ready** |
+| **Initial v1**   | `Semeval.ipynb`                       | Initial BitNet implementation | F1: 0.977 (EN)       |
+| **Multi v1**     | `Semeval_multilingual.ipynb`          | 9-language support            | F1: 0.764 (Multi)    |
+| **Multi v1.1**   | `Semeval_Optimized.ipynb`             | Hyperparameter tuning         | Threshold: 0.49      |
+| **Improved v2**  | `Semeval_multilingual_IMPROVED.ipynb` | Data aug + adapters           | Enhanced             |
+| **RWKV Branch**  | `SemEval_RWK.ipynb`                   | RWKV O(N) architecture        | 2x faster            |
+| **Mamba Branch** | `semeval_mamba.ipynb`                 | Mamba SSM exploration         | Experimental         |
+| **Stable v1**    | `Semantic_mutilingual_deberta.ipynb`  | Production pipeline           | Production-Ready     |
+| **Scaling v1**   | `Mdeberta-QLora.py` / `MT5.py`        | Scripts & advanced models     | Advanced Tuning      |
+| **2nd Last v1**  | `lightning.py`                        | PyTorch Lightning migration   | **2nd Last Version** |
+| **Final v1**     | `final_submission_..._Expert.py`      | Hybrid Expert Ensembling      | **Final Version**    |
+| **Paper WIP**    | `paper_submission_version.py`         | Reproducible Paper Release    | **WIP**              |
 
 ### Core Components
 
@@ -517,55 +599,41 @@ id,text,polarization
 
 ## 🔍 Key Innovations
 
-### 1. BitNet Quantization
+### 1. Siamese Dual-Encoder Architecture
 
-- **1.58-bit weights**: Ternary quantization {-1, 0, 1}
-- **8-bit activations**: Absmax quantization to [-128, 127]
-- **Straight-Through Estimator**: Enables gradient flow through discrete operations
-- **Lambda warmup**: Gradual transition from full precision to quantized
+- **mDeBERTa-v3-large + XLM-RoBERTa-large**: Jointly fine-tuned via 4-bit QLoRA.
+- **Complementary Tokenization**: Fusing SentencePiece and BPE vocabularies reduces out-of-vocabulary (OOV) rates, particularly improving representations for morphologically rich or low-resource scripts like Amharic and Odia.
+- **Joint Representation**: The `[CLS]` vectors form a dense $\mathbb{R}^{2048}$ fusion, yielding high robustness even on ultra-short texts ($0\text{-}15$ words), neutralizing the sequence length bottleneck.
 
-### 2. Focal Loss for Imbalance
+### 2. XGBoost Meta-Stacker with Platt Calibration
 
-```python
-FL(p_t) = -α(1 - p_t)^γ log(p_t)
-```
+- **Feature-Rich Fusion**: The meta-stacker moves beyond soft voting by ingesting prediction confidences ($p_{hyb}$, $p_{exp}$), token counts, and **Shannon entropy**.
+- **Shannon Entropy as Reliability**: High-entropy predictions signal model uncertainty, triggering the stacker to dynamically weight language-specific experts (e.g., GBERT, Italian BERT).
+- **Two-Stage Calibration**: Applies per-language Platt Scaling to calibrate posterior probabilities before thresholding, substantially mitigating over-prediction bias in low-resource setups.
 
-- Reduces weight on easy examples
-- Focuses learning on hard-to-classify samples
-- Superior to class weights for F1 optimization
+### 3. Focal Loss as a Hard-Example Miner
 
-### 3. Language-Aware Training
+- Unlike addressing standard class imbalance, our implementation of Focal Loss (with Label Smoothing) acts as a **hard-example miner**.
+- It down-weights easily identifiable explicit toxicity, heavily concentrating model gradients on the high-entropy, subtly framed sentences (e.g., sarcasm, irony, cultural dog-whistles) responsible for cross-lingual polarization.
 
-- Per-language class weighting
-- Language-specific loss parameters
-- Optional language adapters (LoRA)
-- Enhanced dataset tracking
+### 4. Per-Language Threshold Optimization
 
-### 4. Efficient Architectures
-
-- **RWKV**: Linear complexity, bidirectional context
-- **Mamba**: State-space selective scan
-- Both maintain competitive accuracy with massive speedups
+- To account for language-specific skews and data scarcity profiles (which range from massive English datasets to fewer than 500 samples in Hausa and Odia).
+- Employs a grid-searched optimal threshold tuned distinctively over the development sets.
 
 ---
 
 ## 📦 Dependencies
 
 ```
-torch==2.0.0
-transformers==4.40.0
+torch>=2.0.0
+transformers>=4.40.0
+peft
 accelerate
+xgboost
 scikit-learn
 pandas
 numpy
-matplotlib
-```
-
-**Optional**:
-
-```
-nlpaug  # For data augmentation
-peft    # For LoRA adapters
 ```
 
 ---
@@ -578,91 +646,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- SemEval 2025 Task 9 organizers
-- Hugging Face for the Transformers library
-- BitNet paper authors (Microsoft Research)
-- RWKV and Mamba architecture researchers
-
----
-
-## 🗺️ Roadmap & Future Directions
-
-### ✅ Completed Milestones
-
-- [x] **Phase 1**: Initial BitNet implementation with 97.7% F1 (Oct 24)
-- [x] **Phase 2**: Multilingual support across 9 languages (Oct 27)
-- [x] **Phase 3**: Hyperparameter optimization and threshold tuning (Oct 27)
-- [x] **Phase 4**: Data augmentation pipeline with language-specific weights (Nov 2)
-- [x] **Phase 5**: RWKV efficient architecture with O(N) complexity (Nov 7)
-- [x] **Phase 6**: Mamba state-space model exploration (Nov 9)
-- [x] **Phase 7**: Production-ready XLM-RoBERTa pipeline with advanced training (Nov 16)
-
-### 🚀 Future Research Directions
-
-#### **Phase 6: Hierarchical Reasoning Models**
-
-**Goal**: Implement multi-level reasoning for nuanced polarization detection
-
-- [ ] **Hierarchical Transformer Architecture**
-
-  - Document-level → Sentence-level → Token-level reasoning
-  - Cascaded BitNet layers for efficiency
-  - Attention aggregation across hierarchy levels
-
-- [ ] **Multi-Task Learning Framework**
-
-  - Joint training on polarization + sentiment + toxicity
-  - Shared representations with task-specific heads
-  - Improved generalization through auxiliary tasks
-
-- [ ] **Reasoning Chain Integration**
-  - Step-by-step polarization evidence extraction
-  - Explainable decision-making process
-  - Human-interpretable reasoning paths
-
-#### **Phase 7: LLM-Based Approaches**
-
-**Goal**: Leverage large language models for zero-shot and few-shot learning
-
-- [ ] **LLM Fine-Tuning Pipeline**
-
-  - Adapt models like LLaMA 3, Mistral, or GPT-4
-  - Parameter-efficient fine-tuning (PEFT) with LoRA/QLoRA
-  - BitNet integration for efficient deployment
-
-- [ ] **Prompt Engineering Framework**
-
-  - Zero-shot polarization detection with carefully crafted prompts
-  - Few-shot in-context learning with exemplars
-  - Chain-of-thought prompting for explainability
-
-- [ ] **Retrieval-Augmented Generation (RAG)**
-
-  - Context retrieval from polarization knowledge base
-  - Dynamic example selection for in-context learning
-  - Enhanced performance on edge cases
-
-- [ ] **Multi-Agent LLM Systems**
-  - Specialized agents for different languages
-  - Consensus mechanism for final prediction
-  - Self-reflection and error correction
-
-### 🎯 Research Objectives
-
-| Focus Area             | Target Metric          | Timeline |
-| ---------------------- | ---------------------- | -------- |
-| Hierarchical Reasoning | F1 Macro > 0.85        | 2026     |
-| LLM Integration        | Zero-shot F1 > 0.80    | 2026     |
-| Explainability         | Human agreement > 90%  | 2026     |
-| Cross-lingual Transfer | New language F1 > 0.75 | 2026     |
-| Production API         | Latency < 100ms        | 2026     |
-
-### 📊 Success Metrics
-
-- **Performance**: Achieve state-of-the-art F1 Macro scores (>0.85)
-- **Efficiency**: Maintain inference latency under 100ms
-- **Interpretability**: Provide human-understandable reasoning
-- **Scalability**: Support 20+ languages without retraining
-- **Robustness**: Generalize to out-of-domain data
-
----
+- SemEval-2026 Task 9 organizers
