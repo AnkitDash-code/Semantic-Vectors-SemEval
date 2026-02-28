@@ -1,6 +1,6 @@
 # Ignore all CSV files
 *.csv
 *.zip
-
+dev_phase_data/
 # Ignore Papers folder
 Papers/
