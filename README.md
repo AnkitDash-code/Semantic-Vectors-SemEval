@@ -16,8 +16,8 @@ This repository contains the **SemanticVectors** system for **POLAR@SemEval-2026
 ### Key Achievements
 
 - 🏆 **Macro-F1: 0.797** · **Accuracy: 0.827** across all 22 languages on the hidden test set
-- 🌍 **22 Languages** spanning 8 typological families (Western European, Indic, Semitic, African, Southeast Asian, Sinitic, Turkic, Slavic)
-- 🧠 **Siamese Dual-Encoder** — mDeBERTa-v3-large + XLM-RoBERTa-large via 4-bit QLoRA (+1.8 pp over single encoder)
+- 🌍 **22 Languages** spanning six typological families (Western European, Indic, Semitic, African, Southeast Asian, Sinitic-Turkic-Slavic)
+- 🧠 **Siamese Dual-Encoder** — mDeBERTa-v3-base + XLM-RoBERTa-large via 4-bit QLoRA (+1.8 pp over single encoder)
 - 📊 **XGBoost Meta-Stacker** with Shannon entropy features and per-language Platt calibration
 - 🎯 **Focal Loss as Hard-Example Miner** — concentrates gradients on subtly framed rhetorical instances (γ=2.0 down-weights easy examples by up to 96%)
 - 🔢 **Per-Language Threshold Optimization** via 81-point grid search on development data
@@ -87,7 +87,7 @@ pip install torch>=2.0.0 transformers>=4.40.0 peft accelerate xgboost scikit-lea
 
 ```python
 # final_submission_XLM-Mdeberta-Expert.py
-# Loads both mDeBERTa-v3-large and XLM-RoBERTa-large with 4-bit QLoRA,
+# Loads both mDeBERTa-v3-base and XLM-RoBERTa-large with 4-bit QLoRA,
 # runs the XGBoost meta-stacker, and outputs per-language predictions.
 
 python Work/final_submission_XLM-Mdeberta-Expert.py \
@@ -115,10 +115,10 @@ def encode_dual(text, model_deb, model_xlmr, max_len=256):
     enc_x = tok_xlmr(text, return_tensors="pt", truncation=True, max_length=max_len, padding=True)
 
     with torch.no_grad():
-        h_deb  = model_deb(**enc_d).last_hidden_state[:, 0, :]   # [CLS] → R^1024
+        h_deb  = model_deb(**enc_d).last_hidden_state[:, 0, :]   # [CLS] → R^768
         h_xlmr = model_xlmr(**enc_x).last_hidden_state[:, 0, :]  # [CLS] → R^1024
 
-    h_fused = torch.cat([h_deb, h_xlmr], dim=-1)  # R^2048
+    h_fused = torch.cat([h_deb, h_xlmr], dim=-1)  # R^1792
     return h_fused
 ```
 
@@ -133,24 +133,23 @@ Stage 1 — Data Pooling
     All 22 per-language training CSVs pooled → ~40,395 samples
     (class balance: neutral=1.042, polarized=0.961 — mild imbalance)
 
-Stage 2 — Siamese Dual-Encoder Training (mDeBERTa-v3-large + XLM-RoBERTa-large)
+Stage 2 — Siamese Dual-Encoder Training (mDeBERTa-v3-base + XLM-RoBERTa-large)
     ┌──────────────────────┐    ┌──────────────────────┐
-    │  mDeBERTa-v3-large   │    │  XLM-RoBERTa-large   │
-    │  304M params         │    │  560M params         │
+    │  mDeBERTa-v3-base    │    │  XLM-RoBERTa-large   │
+    │  183M params         │    │  560M params         │
     │  LoRA r=32, α=64     │    │  LoRA r=32, α=64     │
     │  4-bit NF4 QLoRA     │    │  4-bit NF4 QLoRA     │
     │  SentencePiece BPE   │    │  XLM BPE vocab       │
     └────────┬─────────────┘    └──────────┬───────────┘
-             │ [CLS] ∈ R^1024              │ [CLS] ∈ R^1024
+             │ [CLS] ∈ R^768               │ [CLS] ∈ R^1024
              └──────────── concat ─────────┘
-                          h ∈ R^2048
+                          h ∈ R^1792
                    LayerNorm → Dropout(0.1)
                    → GELU → Linear → p_hybrid
 
 Stage 3 — Language Expert Models
     GBERT-large       (deu)  — handles ironic/cultural register
     DBMDZ Italian BERT (ita) — handles implicit framing (baseline recall: 0.467)
-    AfriBERTa         (swa)  — handles Bantu morphological complexity
     QLoRA r=16, α=32 | Out-of-fold predictions for stacking
 
 Stage 4 — XGBoost Meta-Stacker + Platt Calibration
@@ -177,7 +176,7 @@ L = -Σ (1 - p_t)^γ · ỹ · log(p)    where ỹ = label-smoothed target
 
 ### Dual-Encoder: Why Two Models?
 
-| Property        | mDeBERTa-v3-large                                | XLM-RoBERTa-large                     |
+| Property        | mDeBERTa-v3-base                                 | XLM-RoBERTa-large                     |
 | --------------- | ------------------------------------------------ | ------------------------------------- |
 | Pre-training    | ELECTRA-style, gradient-disentangled attention   | Masked LM, 100-language SentencePiece |
 | Strength        | Precise syntactic mapping (content vs. position) | Broad cross-lingual semantic coverage |
@@ -389,9 +388,9 @@ bnb_config = BitsAndBytesConfig(
 
 This script implements the complete four-stage pipeline described in §3 of the paper:
 
-1. Loads both mDeBERTa-v3-large and XLM-RoBERTa-large with 4-bit QLoRA (LoRA r=32, α=64)
+1. Loads both mDeBERTa-v3-base and XLM-RoBERTa-large with 4-bit QLoRA (LoRA r=32, α=64)
 2. Trains both encoders jointly on the pooled 22-language corpus with Focal Loss (γ=2.0, ε=0.05)
-3. Trains language-specific QLoRA expert models (GBERT, Italian BERT, AfriBERTa)
+3. Trains language-specific QLoRA expert models (GBERT, Italian BERT)
 4. Fits an XGBoost meta-stacker on out-of-fold predictions using `[p_hybrid, p_expert, token_count, max(p), H(p)]`
 5. Applies per-language Platt calibration and grid-searched threshold optimization
 
@@ -481,7 +480,7 @@ Finalizing configuration for exact paper reproducibility with unified CLI, deter
 
 | Configuration              | F1 Macro  | Δ    |
 | -------------------------- | --------- | ---- |
-| mDeBERTa-v3-large alone    | 0.762     | —    |
+| mDeBERTa-v3-base alone     | 0.762     | —    |
 | XLM-R-large alone          | 0.771     | +0.9 |
 | Siamese dual-encoder       | 0.789     | +1.8 |
 | + threshold optimization   | 0.795     | +0.6 |
@@ -496,7 +495,7 @@ The Siamese dual-encoder delivers the largest single gain (+1.8 pp). Focal loss 
 | System                                | Macro-F1  |
 | ------------------------------------- | --------- |
 | Official task majority-class baseline | 0.461     |
-| Single mDeBERTa-v3-large              | 0.762     |
+| Single mDeBERTa-v3-base               | 0.762     |
 | Single XLM-R-large                    | 0.771     |
 | **SemanticVectors (FULL)**            | **0.797** |
 
@@ -520,7 +519,7 @@ target_modules     = ["query_proj", "value_proj"]  # mDeBERTa
 
 # Training
 num_epochs         = 4
-batch_size         = 64
+batch_size         = 128
 lr_hybrid          = 2e-4
 lr_expert          = 2e-5
 max_seq_length     = 256
@@ -636,16 +635,16 @@ id,text,label
 2,"These people are destroying everything we built!",1
 ```
 
-**Languages — 22 across 8 typological families:**
+**Languages — 22 across six typological families:**
 
-| Family                    | Languages                    |
-| ------------------------- | ---------------------------- |
-| Western European          | deu, eng, ita, spa, pol      |
-| Indic / Indo-Aryan        | hin, nep, ori, pan, tel, urd |
-| Semitic                   | arb, fas                     |
-| African                   | amh, hau, swa                |
-| Southeast Asian           | khm, mya                     |
-| Sinitic / Turkic / Slavic | zho / tur / rus, ben         |
+| Family                    | Languages                         |
+| ------------------------- | --------------------------------- |
+| Western European          | deu, eng, ita, spa, pol           |
+| Indic / Indo-Aryan        | hin, ben, nep, ori, pan, tel, urd |
+| Semitic                   | arb, fas                          |
+| African                   | amh, hau, swa                     |
+| Southeast Asian           | khm, mya                          |
+| Sinitic / Turkic / Slavic | zho / tur / rus                   |
 
 **Statistics:**
 
@@ -667,18 +666,18 @@ dev_phase_data/subtask1/train/{lang}.csv  # early 9-language dev-phase data
 
 ### 1. Siamese Dual-Encoder Architecture
 
-Two large encoders process the same input **independently in parallel**, then their `[CLS]` representations are concatenated to form a dense $\mathbb{R}^{2048}$ joint embedding:
+Two large encoders process the same input **independently in parallel**, then their `[CLS]` representations are concatenated to form a dense $\mathbb{R}^{1792}$ joint embedding:
 
 ```
-h = [h_mDeBERTa ; h_XLM-R] ∈ R^{2048}
-Classification head: LayerNorm → Dropout(0.1) → GELU → Linear(2048, 2)
+h = [h_mDeBERTa ; h_XLM-R] ∈ R^{1792}
+Classification head: LayerNorm → Dropout(0.1) → GELU → Linear(1792, 2)
 ```
 
 **Why this works:**
 
 - mDeBERTa's **disentangled attention** (content vs. position) provides precise syntactic mapping
 - XLM-R's **broad 100-language pretraining** provides cross-lingual semantic coverage
-- The 2048-dim fusion is robust to ultra-short texts (macro-F1 ~0.82 on 0–15 word sequences), disproving the hypothesis that short texts create a representational bottleneck
+- The 1792-dim fusion is robust to ultra-short texts (macro-F1 ~0.82 on 0–15 word sequences), disproving the hypothesis that short texts create a representational bottleneck
 - **Complementary tokenizers** (SentencePiece + BPE) jointly cover rare or morphologically complex sub-words, reducing OOV for Amharic, Odia, and other low-resource scripts
 
 ### 2. XGBoost Meta-Stacker with Platt Calibration
@@ -743,7 +742,7 @@ for lang in languages:
 
 | Stage                                      | Time         |
 | ------------------------------------------ | ------------ |
-| Dual-encoder training (4 epochs, batch=64) | ~2.5 hours   |
+| Dual-encoder training (4 epochs, batch=128)| ~2.5 hours   |
 | Expert model training (3 × 4 epochs)       | ~1.5 hours   |
 | XGBoost stacker + Platt calibration        | < 5 minutes  |
 | Threshold optimization (per-language)      | < 2 minutes  |
@@ -784,4 +783,4 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - POLAR@SemEval-2026 Task 9 organizers for datasets and evaluation infrastructure
 - Google Colab, Kaggle, and Lightning AI for GPU resources during early development
-- Anonymous reviewers for constructive feedback on the paper
+- The shared task participants and organizers whose prior work established the evaluation framework
